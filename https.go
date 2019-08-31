@@ -14,7 +14,7 @@ import "io/ioutil"
 import "crypto/tls"
 import "errors"
 import "golang.org/x/net/http2"
-import "github.com/lucas-clemente/quic-go/h2quic"
+import "github.com/lucas-clemente/quic-go/http3"
 
 type Https struct {
 	client     http.Client
@@ -33,10 +33,11 @@ func NewHttps(sni string, forceh1 bool) *Https {
 	case forceh1 || *opt_h1:
 		h1 := new(http.Transport)
 		h1.TLSClientConfig = tlscfg
+		h1.Proxy = http.ProxyFromEnvironment
 		tr = h1
 
 	case *opt_quic:
-		quic := new(h2quic.RoundTripper)
+		quic := new(http3.RoundTripper)
 //		quic.TLSClientConfig = tlscfg // FIXME
 		tr = quic
 
